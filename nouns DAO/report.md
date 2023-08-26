@@ -30,3 +30,21 @@ VS Code, manual inspection
 #### **Recommended Mitigation Steps**
 
 First check if all the tokenIDs do exist and is owned by the owner before transferring any of the tokens
+
+### Issue 02
+
+If a user calls `joinFork` function, with a list of tokenIDs that doesn't belong to him, or with a list of tokenIDs that have not been approved to be transferred by the `timelock`, this function would revert while executing. But at that point, a prorated part of the treasury will have already been sent to the new fork DAO's treasury. This would be a problem and those funds will not be able to be collected back. This would result in the new DAO treasury having an unexpected surplus of funds (ETH and or ERC20 tokens)
+
+##### **Proof of Concept**
+Steps to recreate the issue
+Call the `joinFork` function with a non-empty list of tokenIDs that does not exist/owned by the `msg.sender`. 
+
+##### **Tools Used**
+VS Code, Manual Inspection
+
+##### **Recommended Mitigation Steps**
+
+![alt text](https://i.ibb.co/H7cFkpV/Screenshot-2023-07-11-at-21-41-00.png)
+
+As shown above, it is best practise to to transfer the Noun tokens from the user first and then send funds to the new fork DAO.
+Another method you can use is to first check if these tokens exist and are owned and approved by the caller at the point invocation of `joinFork` function
